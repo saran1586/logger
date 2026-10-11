@@ -1,28 +1,27 @@
 package main
 
 import (
-"log"
+	"log"
 
-"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-InitLogger()
+	InitLogger()
 
-ConnectDB()
+	ConnectDB()
 
-r := gin.Default()
+	r := gin.Default()
 
-r.POST("/employees", CreateEmployee)
-r.GET("/employees", GetEmployees)
-r.PUT("/employees/:id", UpdateEmployee)
-r.DELETE("/employees/:id", DeleteEmployee)
+	r.POST("/employees", CreateEmployee)
+	r.GET("/employees", GetEmployees)
+	r.PUT("/employees/:id", UpdateEmployee)
+	r.DELETE("/employees/:id", DeleteEmployee)
 
+	Logger.Println("Server started on port 8080")
 
-Logger.Println("Server started on port 8080")
+	log.Println("Server running on :8080")
 
-log.Println("Server running on :8080")
-
-r.Run(":8080")
+	r.Run(":8080")
 }

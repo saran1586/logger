@@ -1,96 +1,83 @@
 package main
 
 import (
-"net/http"
+	"net/http"
 
-"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
-
 
 func CreateEmployee(c *gin.Context) {
 
-var employee Employee
+	var employee Employee
 
-err := c.ShouldBindJSON(&employee)
+	err := c.ShouldBindJSON(&employee)
 
-if err != nil {
-c.JSON(http.StatusBadRequest, gin.H{
-"error": err.Error(),
-})
-return
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	DB.Create(&employee)
+
+	c.JSON(http.StatusCreated, employee)
 }
-
-DB.Create(&employee)
-
-c.JSON(http.StatusCreated, employee)
-}
-
-
 
 func GetEmployees(c *gin.Context) {
 
-var employees []Employee
+	var employees []Employee
 
-DB.Find(&employees)
+	DB.Find(&employees)
 
-c.JSON(http.StatusOK, employees)
+	c.JSON(http.StatusOK, employees)
 }
-
-
 
 func UpdateEmployee(c *gin.Context) {
 
-id := c.Param("id")
+	id := c.Param("id")
 
-var employee Employee
+	var employee Employee
 
-if err := DB.First(&employee, id).Error; err != nil {
+	if err := DB.First(&employee, id).Error; err != nil {
 
-c.JSON(http.StatusNotFound, gin.H{
-"error": "Employee not found",
-})
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Employee not found",
+		})
 
-return
+		return
+	}
+
+	var update Employee
+
+	c.ShouldBindJSON(&update)
+
+	employee.Name = update.Name
+	employee.Salary = update.Salary
+
+	DB.Save(&employee)
+
+	c.JSON(http.StatusOK, employee)
 }
-
-
-var update Employee
-
-c.ShouldBindJSON(&update)
-
-
-employee.Name = update.Name
-employee.Age = update.Age
-employee.Salary = update.Salary
-
-
-DB.Save(&employee)
-
-c.JSON(http.StatusOK, employee)
-}
-
-
 
 func DeleteEmployee(c *gin.Context) {
 
-id := c.Param("id")
+	id := c.Param("id")
 
-var employee Employee
+	var employee Employee
 
-if err := DB.First(&employee, id).Error; err != nil {
+	if err := DB.First(&employee, id).Error; err != nil {
 
-c.JSON(http.StatusNotFound, gin.H{
-"error": "Employee not found",
-})
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Employee not found",
+		})
 
-return	
-}
+		return
+	}
 
+	DB.Delete(&employee)
 
-DB.Delete(&employee)
-
-
-c.JSON(http.StatusOK, gin.H{
-"message": "Employee deleted",
-})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Employee deleted",
+	})
 }
